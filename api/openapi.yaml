@@ -1,0 +1,364 @@
+openapi: 3.0.0
+info:
+  title: Customer
+  description: API for customer interactions
+  version: "1.0"
+servers:
+- url: https://virtserver.swaggerhub.com/Mighty-Beanz/Utopia/1.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/Mighty-Beanz/Customer/1.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /bookings:
+    post:
+      tags:
+      - Booking
+      summary: Create a booking
+      operationId: bookingsPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+        required: true
+      responses:
+        "200":
+          description: Successfully created new Booking
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+      security:
+      - oAuth2:
+        - customer
+      x-swagger-router-controller: Booking
+  /users/{userId}/bookings:
+    get:
+      tags:
+      - Booking
+      summary: Get all bookings by user
+      operationId: usersUserIdBookingsGET
+      parameters:
+      - name: userId
+        in: path
+        description: User to find bookings by
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Successfully returned a list of a particular users bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+                x-content-type: application/json
+      security:
+      - oAuth2:
+        - customer
+      x-swagger-router-controller: Booking
+  /bookings/{bookingId}:
+    delete:
+      tags:
+      - Booking
+      summary: Delete a booking
+      operationId: bookingsBookingIdDELETE
+      parameters:
+      - name: bookingId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Successfully deleted Booking
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+        "404":
+          description: Booking not found
+      security:
+      - oAuth2:
+        - customer
+      x-swagger-router-controller: Booking
+  /flights:
+    get:
+      tags:
+      - Flight
+      summary: Get all flights
+      operationId: flightsGET
+      responses:
+        "200":
+          description: Successfully got the list of flights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+                x-content-type: application/json
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+      x-swagger-router-controller: Flight
+  /flights:{searchCriterion}:
+    get:
+      tags:
+      - Flight
+      summary: Get all the flights that have the search criterion within them
+      operationId: flightssearchCriterionGET
+      parameters:
+      - name: searchCriterion
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successfully got the list of flights by search criterion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+      x-swagger-router-controller: Flight
+  /agents:
+    get:
+      tags:
+      - Agent
+      summary: Show all agents
+      operationId: agentsGET
+      responses:
+        "200":
+          description: Successfully got the list of agents
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+      security:
+      - oAuth2:
+        - customer
+      x-swagger-router-controller: Agent
+  /agents/{agentId}/agent:
+    post:
+      tags:
+      - Agent
+      operationId: agentsAgentIdAgentPOST
+      parameters:
+      - name: agentId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: client
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Successfully attached new customer
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+      security:
+      - oAuth2:
+        - customer
+      x-swagger-router-controller: Agent
+    delete:
+      tags:
+      - Agent
+      summary: Detach customer from agent
+      operationId: agentsAgentIdAgentDELETE
+      parameters:
+      - name: agentId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: client
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "204":
+          description: Successfully detached client
+        "400":
+          description: Invalid Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                x-content-type: text/plain
+        "404":
+          description: Client/Agent not found
+      security:
+      - oAuth2:
+        - customer
+      x-swagger-router-controller: Agent
+components:
+  schemas:
+    User:
+      required:
+      - name
+      - userId
+      - userRole
+      type: object
+      properties:
+        userId:
+          type: integer
+        userRole:
+          type: string
+          enum:
+          - Customer
+          - Counter
+          - Agent
+        name:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+          format: password
+      example:
+        password: ""
+        address: address
+        phone: phone
+        name: name
+        userRole: Customer
+        userId: 0
+        email: email
+    Booking:
+      required:
+      - bookingAgent
+      - bookingId
+      - flight
+      - numberOfTickets
+      - patron
+      - ticketPrice
+      type: object
+      properties:
+        bookingId:
+          type: integer
+        bookingAgent:
+          type: integer
+        patron:
+          type: integer
+        flight:
+          type: integer
+        ticketPrice:
+          type: number
+        numberOfTickets:
+          type: integer
+      example:
+        bookingAgent: 6
+        flight: 5
+        patron: 1
+        ticketPrice: 5.63737665663332876420099637471139430999755859375
+        numberOfTickets: 2
+        bookingId: 0
+    Flight:
+      required:
+      - airline
+      - arrivalLocation
+      - arrivalTime
+      - availableSeats
+      - departureLocation
+      - departureTime
+      - flightId
+      - price
+      type: object
+      properties:
+        flightId:
+          type: integer
+        airline:
+          type: integer
+        arrivalTime:
+          type: string
+          format: date-time
+        arrivalLocation:
+          type: integer
+        departureTime:
+          type: string
+          format: date-time
+        departureLocation:
+          type: integer
+        availableSeats:
+          type: integer
+        price:
+          type: number
+      example:
+        departureTime: 2000-01-23T04:56:07.000+00:00
+        departureLocation: 5
+        arrivalTime: 2000-01-23T04:56:07.000+00:00
+        availableSeats: 5
+        price: 2.3021358869347654518833223846741020679473876953125
+        flightId: 0
+        airline: 6
+        arrivalLocation: 1
+  responses:
+    "400Error":
+      description: Invalid Request
+      content:
+        text/plain:
+          schema:
+            type: string
+            x-content-type: text/plain
+  securitySchemes:
+    oAuth2:
+      type: oauth2
+      description: Using OAuth2 with implicit grant flow
+      flows:
+        implicit:
+          authorizationUrl: https://ss-utopia.auth.us-east-1.amazoncognito.com/oauth2/authorize?response_type=token&scope=aws.cognito.signin.user.admin+openid+profile&redirect_uri=https://google.com
+          scopes:
+            customer: abilities allowed to customers
