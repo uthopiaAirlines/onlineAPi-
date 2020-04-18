@@ -1,34 +1,41 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Booking = require('../service/BookingService');
+const router = require('express').Router(),
+  booking = require('../service/BookingService');
 
-module.exports.bookingsBookingIdDELETE = function bookingsBookingIdDELETE (req, res, next, bookingId) {
-  Booking.bookingsBookingIdDELETE(bookingId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+router.delete('/bookings/:id', async (req, res) => {
+  try {
+    console.log("recieved");
+    console.log(req.params.id);
+    await booking.bookingsBookingIdDELETE(req.params.id);
+    res.status(200);
+    res.send("completed");
+  } catch (err) {
+    res.status(400);
+    res.send(err);
+  }
+})
 
-module.exports.bookingsPOST = function bookingsPOST (req, res, next, body) {
-  Booking.bookingsPOST(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+router.post('/bookings', async (req, res) => {
+  try {
+    let result = await booking.bookingsPOST(req.body);
+    res.status(201);
+    res.send(result);
+  } catch (err) {
+    res.status(400);
+    res.send(err);
+  }
+})
 
-module.exports.usersUserIdBookingsGET = function usersUserIdBookingsGET (req, res, next, userId) {
-  Booking.usersUserIdBookingsGET(userId)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+router.get('/users/:id/bookings', async (req, res) => {
+  try {
+    let result = await booking.usersUserIdBookingsGET(req.params.id);
+    res.status(200);
+    res.send(result);
+  } catch (err) {
+    res.status(400);
+    res.send(err);
+  }
+})
+
+module.exports = router;

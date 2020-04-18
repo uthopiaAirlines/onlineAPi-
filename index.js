@@ -1,23 +1,40 @@
-'use strict';
+const express = require('express'),
+    app = express(),
+    bodyParser = require('body-parser');
 
-var path = require('path');
-var http = require('http');
+let serverPort = 8080;
 
-var oas3Tools = require('oas3-tools');
-var serverPort = 8080;
+const flightsRoutes = require('./controllers/Flight'),
+    // agentRoutes = require('./controllers/Agent'),
+    bookingsRoutes = require('./controllers/Booking');
 
-// swaggerRouter configuration
-var options = {
-    controllers: path.join(__dirname, './controllers')
-};
+app.use(bodyParser.urlencoded({ extended: true }));
 
-var expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/openapi.yaml'), options);
-expressAppConfig.addValidator();
-var app = expressAppConfig.getApp();
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", '*');
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+})
 
-// Initialize the Swagger middleware
-http.createServer(app).listen(serverPort, function () {
-    console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+app.use(bodyParser.json());
+
+app.use((err, req, res, next) => {
+    // This check makes sure this is a JSON parsing issue, but it might be
+    // coming from any middleware, not just body-parser:
+    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+        return res.sendStatus(400); // Bad request
+    }
+    next();
 });
 
+// app.use("/", agentRoutes);
+app.use("/", flightsRoutes);
+app.use("/", bookingsRoutes);
+
+app.listen(serverPort, () => {
+    console.log(`The server is running and listening on port ${serverPort}`);
+});

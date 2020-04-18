@@ -1,5 +1,8 @@
 'use strict';
 
+const bookingDao = require('../dao/BookingsDao'),
+  flightsDao = require('../dao/FlightsDao'),
+  factory = require('../utils/dbConnectionFactory');
 
 /**
  * Delete a booking
@@ -7,10 +10,26 @@
  * bookingId Integer 
  * no response value expected for this operation
  **/
-exports.bookingsBookingIdDELETE = function(bookingId) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.bookingsBookingIdDELETE = async (bookingId) => {
+  let conn = await factory.conn();
+  try {
+    await conn.beginTransaction();
+    let [booking] = await bookingDao.findBooking(conn, bookingId);
+    await flightsDao.addSeatsToFlight(conn, booking[0].flight, booking[0].numberOfTickets);
+    await bookingDao.deleteBooking(conn, bookingId);
+    await conn.commit();
+  } catch (err) {
+    await conn.rollback();
+    if (!err.hasOwnProperty("code"))
+      throw {
+        message: err.message,
+        code: "#E999"
+      }
+    else
+      throw err;
+  } finally {
+
+  }
 }
 
 
@@ -20,10 +39,37 @@ exports.bookingsBookingIdDELETE = function(bookingId) {
  * body Booking 
  * no response value expected for this operation
  **/
-exports.bookingsPOST = function(body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.bookingsPOST = async (body) => {
+  if (!body.hasOwnProperty("patron") || !body.hasOwnProperty("flight") || !body.hasOwnProperty("ticketPrice") || !body.hasOwnProperty("numberOfTickets"))
+    throw {
+      message: "Invalid Request Body",
+      code: "#E798"
+    };
+  let conn = await factory.conn();
+  try {
+    await conn.beginTransaction();
+    let [flight] = await flightsDao.findFlight(conn, body.flight);
+    if (flight[0].avaiableSeats > body.numberOfTickets)
+      throw {
+        message: "Not Enough Seats Available",
+        code: "#E444"
+      };
+    await flightsDao.removeSeatsFromFlight(conn, body.flight, body.numberOfTickets);
+    let [booking] = await bookingDao.insert(conn, body);
+    await conn.commit();
+    return booking[0];
+  } catch (err) {
+    await conn.rollback();
+    if (!err.hasOwnProperty("code"))
+      throw {
+        message: err.message,
+        code: "#E999"
+      }
+    else
+      throw err;
+  } finally {
+    // conn.end();
+  }
 }
 
 
@@ -33,29 +79,21 @@ exports.bookingsPOST = function(body) {
  * userId Integer User to find bookings by
  * returns List
  **/
-exports.usersUserIdBookingsGET = function(userId) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "bookingAgent" : 6,
-  "flight" : 5,
-  "patron" : 1,
-  "ticketPrice" : 5.637376656633329,
-  "numberOfTickets" : 2,
-  "bookingId" : 0
-}, {
-  "bookingAgent" : 6,
-  "flight" : 5,
-  "patron" : 1,
-  "ticketPrice" : 5.637376656633329,
-  "numberOfTickets" : 2,
-  "bookingId" : 0
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.usersUserIdBookingsGET = async (userId) => {
+  let conn = await factory.conn();
+  try {
+    let [row] = await bookingDao.findAll(conn, userId);
+    return row;
+  } catch (err) {
+    if (!err.hasOwnProperty("code"))
+      throw {
+        message: err.message,
+        code: "#E999"
+      }
+    else
+      throw err;
+  } finally {
+    // conn.end();
+  }
 }
 

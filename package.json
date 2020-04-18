@@ -4,8 +4,8 @@
   "description": "API for customer interactions",
   "main": "index.js",
   "scripts": {
-	"prestart": "npm install",
-	"start": "node index.js"
+    "prestart": "npm install",
+    "start": "node index.js"
   },
   "keywords": [
     "swagger"
@@ -13,8 +13,11 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "body-parser": "^1.19.0",
     "connect": "^3.2.0",
+    "express": "^4.17.1",
     "js-yaml": "^3.3.0",
-    "oas3-tools": "^2.0.2"
+    "mysql": "^2.18.1",
+    "mysql2": "^2.1.0"
   }
 }
