@@ -6,7 +6,7 @@ const bookingDao = require('../dao/BookingsDao'),
 
 /**
  * Delete a booking
- *
+ 
  * bookingId Integer 
  * no response value expected for this operation
  **/
@@ -28,7 +28,7 @@ exports.bookingsBookingIdDELETE = async (bookingId) => {
     else
       throw err;
   } finally {
-
+    await conn.end();
   }
 }
 
@@ -68,7 +68,7 @@ exports.bookingsPOST = async (body) => {
     else
       throw err;
   } finally {
-    // conn.end();
+    await conn.end();
   }
 }
 
@@ -83,6 +83,7 @@ exports.usersUserIdBookingsGET = async (userId) => {
   let conn = await factory.conn();
   try {
     let [row] = await bookingDao.findAll(conn, userId);
+    row = proccessBookings(row);
     return row;
   } catch (err) {
     if (!err.hasOwnProperty("code"))
@@ -93,7 +94,49 @@ exports.usersUserIdBookingsGET = async (userId) => {
     else
       throw err;
   } finally {
-    // conn.end();
+    await conn.end();
   }
 }
 
+let proccessBookings = (bookings) => {
+  try {
+    let proccessedbookings = new Array();
+
+    bookings.forEach(booking => {
+      proccessedbookings.push({
+        bookingId: booking.bookingId,
+        patron: booking.patron,
+        flight: {
+          flightId: booking.flightId,
+          airline: {
+            airlineId: booking.airlineId,
+            name: booking.airlineName
+          },
+          arrivalTime: booking.arrivalTime,
+          arrivalLocation: {
+            airportId: booking.arrivalLocation,
+            name: booking.arrivalName,
+            address: booking.arrivalAddress,
+            airportCode: booking.arrivalCode
+          },
+          departureTime: booking.departureTime,
+          departureLocation: {
+            airportId: booking.departureLocation,
+            name: booking.departureName,
+            address: booking.departureAddress,
+            airportCode: booking.departureCode
+          }
+        },
+        ticketPrice: bookings.ticketPrice,
+        numberOfTickets: bookings.numberOfTickets,
+        bookingAgent: bookings.bookingAgent
+      });
+    });
+    return proccessedbookings;
+  } catch (err) {
+    throw {
+      message: "Unable To Process Bookings",
+      code: "#E369"
+    };
+  }
+}

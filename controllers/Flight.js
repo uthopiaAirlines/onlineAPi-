@@ -1,7 +1,8 @@
 'use strict';
 
 const router = require('express').Router(),
-  flight = require('../service/FlightService');
+  flight = require('../service/FlightService'),
+  errorHandler = require('../utils/errorCodeHandler');
 
 router.get('/flights', async (req, res) => {
   try {
@@ -15,20 +16,10 @@ router.get('/flights', async (req, res) => {
       res.send(result);
     }
   } catch (err) {
-    res.status(400);
+    console.log(err.message)
+    res.status(errorHandler.statusCodeHandler(err.code));
     res.send(err);
   }
 });
-
-// module.exports.flightssearchCriterionGET = function flightssearchCriterionGET(req, res, next, searchCriterion) {
-//   console.log("here");
-//   Flight.flightssearchCriterionGET(searchCriterion)
-//     .then(function (response) {
-//       utils.writeJson(res, response);
-//     })
-//     .catch(function (response) {
-//       utils.writeJson(res, response);
-//     });
-// };
 
 module.exports = router;

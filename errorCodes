@@ -1,4 +1,7 @@
-#E382  -- failed to connect to databse
-#E798  -- Invalid Request Body
-#E444  -- Not Enought Seats Available
-#E999  -- Unknown Server Error
+code   ==  message                     == statusCode
+
+#E382  -- failed to connect to databse -- 500
+#E798  -- Invalid Request Body		   -- 400
+#E444  -- Not Enought Seats Available  -- 409
+#E999  -- Unknown Server Error         -- 500
+#E451  -- Problem With AWS Connection  -- 500

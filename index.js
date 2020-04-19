@@ -5,7 +5,7 @@ const express = require('express'),
 let serverPort = 8080;
 
 const flightsRoutes = require('./controllers/Flight'),
-    // agentRoutes = require('./controllers/Agent'),
+    agentRoutes = require('./controllers/Agent'),
     bookingsRoutes = require('./controllers/Booking');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,7 +31,7 @@ app.use((err, req, res, next) => {
     next();
 });
 
-// app.use("/", agentRoutes);
+app.use("/", agentRoutes);
 app.use("/", flightsRoutes);
 app.use("/", bookingsRoutes);
 
