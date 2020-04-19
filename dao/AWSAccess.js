@@ -1,17 +1,17 @@
 const aws = require('aws-sdk');
 
 aws.config = {
-    region: "us-east-1",
-    accessKeyId: 'AKIATROZW5KTV5NWVG6E',
-    secretAccessKey: '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',
+    region: "#####################",
+    accessKeyId: '################################',
+    secretAccessKey: '######################################',
     apiVersions: {
         cognitoidentityserviceprovider: '2016-04-18'
     }
 };
 
 const poolData = {
-    UserPoolId: 'us-east-1_iPhgdkopW',
-    ClientId: '2dlb0mog85rvn43g5inhnqb111'
+    UserPoolId: '############################',
+    ClientId: '#########################################'
 }
 
 module.exports.findAllAgents = async () => {
