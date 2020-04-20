@@ -2,8 +2,6 @@ const express = require('express'),
     app = express(),
     bodyParser = require('body-parser');
 
-let serverPort = 8080;
-
 require('dotenv').config();
 
 const flightsRoutes = require('./controllers/Flight'),
