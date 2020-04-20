@@ -15,7 +15,12 @@ exports.bookingsBookingIdDELETE = async (bookingId) => {
   try {
     await conn.beginTransaction();
     let [booking] = await bookingDao.findBooking(conn, bookingId);
-    await flightsDao.addSeatsToFlight(conn, booking[0].flight, booking[0].numberOfTickets);
+    if (booking.length == 0)
+      throw {
+        message: "Booking Not Found",
+        code: "#E404"
+      }
+    await flightsDao.addSeatsToFlight(conn, booking[0].flightId, booking[0].numberOfTickets);
     await bookingDao.deleteBooking(conn, bookingId);
     await conn.commit();
   } catch (err) {
@@ -40,7 +45,7 @@ exports.bookingsBookingIdDELETE = async (bookingId) => {
  * no response value expected for this operation
  **/
 exports.bookingsPOST = async (body) => {
-  if (!body.hasOwnProperty("patron") || !body.hasOwnProperty("flight") || !body.hasOwnProperty("ticketPrice") || !body.hasOwnProperty("numberOfTickets"))
+  if (!body.hasOwnProperty("patron") || !body.hasOwnProperty("flight") || !body.hasOwnProperty("ticketPrice") || !body.hasOwnProperty("numberOfTickets") || !body.hasOwnProperty("bookingAgent"))
     throw {
       message: "Invalid Request Body",
       code: "#E798"
@@ -57,7 +62,7 @@ exports.bookingsPOST = async (body) => {
     await flightsDao.removeSeatsFromFlight(conn, body.flight, body.numberOfTickets);
     let [booking] = await bookingDao.insert(conn, body);
     await conn.commit();
-    return booking[0];
+    return booking;
   } catch (err) {
     await conn.rollback();
     if (!err.hasOwnProperty("code"))
@@ -82,7 +87,7 @@ exports.bookingsPOST = async (body) => {
 exports.usersUserIdBookingsGET = async (userId) => {
   let conn = await factory.conn();
   try {
-    let [row] = await bookingDao.findAll(conn, userId);
+    let [row] = await bookingDao.findAllByPatronId(conn, userId);
     row = proccessBookings(row);
     return row;
   } catch (err) {
@@ -127,9 +132,9 @@ let proccessBookings = (bookings) => {
             airportCode: booking.departureCode
           }
         },
-        ticketPrice: bookings.ticketPrice,
-        numberOfTickets: bookings.numberOfTickets,
-        bookingAgent: bookings.bookingAgent
+        ticketPrice: booking.ticketPrice,
+        numberOfTickets: booking.numberOfTickets,
+        bookingAgent: booking.bookingAgent
       });
     });
     return proccessedbookings;

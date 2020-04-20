@@ -19,7 +19,7 @@ routers.delete('/agents/:agentId/clients/:clientId', async (req, res) => {
 routers.post('/agents/:agentId/clients/:clientId', async (req, res) => {
   try {
     let result = await agent.agentsAgentIdAgentPOST(req.params.agentId, req.params.clientId);
-    res.status(200);
+    res.status(201);
     res.send(result);
   } catch (err) {
     console.log(err.message)
