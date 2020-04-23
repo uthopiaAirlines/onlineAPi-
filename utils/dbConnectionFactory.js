@@ -7,11 +7,9 @@ const config = {
     database: 'utopiaAirlines'
 };
 
-let conn = mysql.createConnection(config);
-
 module.exports.conn = () => {
     try {
-        return mysql.createConnection(config)
+        return mysql.createConnection(config);
     } catch (err) {
         throw {
             message: "Failed To Connect to Databse",

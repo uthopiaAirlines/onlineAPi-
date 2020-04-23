@@ -1,7 +1,7 @@
 'use strict';
 
-const flightDao = require("../dao/FlightsDao");
-const factory = require('../utils/dbConnectionFactory');
+const flightDao = require("../dao/FlightsDao"),
+  factory = require('../utils/dbConnectionFactory');
 
 /**
  * Get all flights
@@ -11,8 +11,9 @@ const factory = require('../utils/dbConnectionFactory');
 exports.flightsGET = async () => {
   let conn = await factory.conn();
   try {
-    let [rows] = await flightDao.findAll(conn);
-    return rows;
+    let [result] = await flightDao.findAll(conn);
+    result = processFlights(result);
+    return result;
   } catch (err) {
     if (!err.hasOwnProperty("code"))
       throw {
@@ -22,7 +23,7 @@ exports.flightsGET = async () => {
     else
       throw err;
   } finally {
-
+    await conn.end();
   }
 }
 
@@ -34,8 +35,11 @@ exports.flightsGET = async () => {
  * returns Flight
  **/
 exports.flightssearchCriterionGET = async (searchCriterion) => {
-  let variableNames = Object.getOwnPropertyNames(searchCriterion);
-  let variableValues = Object.values(searchCriterion);
+  if (!searchCriterion.hasOwnProperty("flightId") && !searchCriterion.hasOwnProperty("airline") && !searchCriterion.hasOwnProperty("arrivalTime") && !searchCriterion.hasOwnProperty("arrivalLocation") && !searchCriterion.hasOwnProperty("departureTime") && !searchCriterion.hasOwnProperty("departureLocation") && !searchCriterion.hasOwnProperty("availableSeats") && !searchCriterion.hasOwnProperty("price"))
+    throw {
+      message: "Unproccesable Search Criteria",
+      code: "#E200"
+    }
   let conn = await factory.conn();
   try {
     searchCriterion = {
@@ -49,6 +53,7 @@ exports.flightssearchCriterionGET = async (searchCriterion) => {
       price: searchCriterion.price || 'THISISTHEDEFAULT'
     };
     let [result] = await flightDao.searchFlightsByCriterion(conn, searchCriterion);
+    result = processFlights(result);
     return result;
   } catch (err) {
     if (!err.hasOwnProperty("code"))
@@ -59,7 +64,44 @@ exports.flightssearchCriterionGET = async (searchCriterion) => {
     else
       throw err;
   } finally {
-
+    await conn.end();
   }
 }
 
+let processFlights = (flights) => {
+  try {
+    let proccessedFlights = new Array();
+
+    flights.forEach(flight => {
+      proccessedFlights.push({
+        flightId: flight.flightId,
+        airline: {
+          airlineId: flight.airlineId,
+          name: flight.airlineName
+        },
+        arrivalTime: flight.arrivalTime,
+        arrivalLocation: {
+          airportId: flight.arrivalLocation,
+          name: flight.arrivalName,
+          address: flight.arrivalAddress,
+          airportCode: flight.arrivalCode
+        },
+        departureTime: flight.departureTime,
+        departureLocation: {
+          airportId: flight.departureLocation,
+          name: flight.departureName,
+          address: flight.departureAddress,
+          airportCode: flight.departureCode
+        },
+        availableSeats: flight.availableSeats,
+        price: flight.price
+      });
+    });
+    return proccessedFlights;
+  } catch (err) {
+    throw {
+      message: "Unable To Process Flights",
+      code: "#E369"
+    };
+  }
+}

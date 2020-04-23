@@ -1,7 +1,8 @@
 'use strict';
 
 const router = require('express').Router(),
-  booking = require('../service/BookingService');
+  booking = require('../service/BookingService'),
+  errorHandler = require('../utils/errorCodeHandler');
 
 router.delete('/bookings/:id', async (req, res) => {
   try {
@@ -11,7 +12,8 @@ router.delete('/bookings/:id', async (req, res) => {
     res.status(200);
     res.send("completed");
   } catch (err) {
-    res.status(400);
+    console.log(err.message)
+    res.status(errorHandler.statusCodeHandler(err.code));
     res.send(err);
   }
 })
@@ -22,7 +24,8 @@ router.post('/bookings', async (req, res) => {
     res.status(201);
     res.send(result);
   } catch (err) {
-    res.status(400);
+    console.log(err.message)
+    res.status(errorHandler.statusCodeHandler(err.code));
     res.send(err);
   }
 })
@@ -33,7 +36,8 @@ router.get('/users/:id/bookings', async (req, res) => {
     res.status(200);
     res.send(result);
   } catch (err) {
-    res.status(400);
+    console.log(err.message)
+    res.status(errorHandler.statusCodeHandler(err.code));
     res.send(err);
   }
 })
