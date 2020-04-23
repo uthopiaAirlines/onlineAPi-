@@ -1,34 +1,39 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Agent = require('../service/AgentService');
+const routers = require('express').Router(),
+  agent = require('../service/AgentService');
 
-module.exports.agentsAgentIdAgentDELETE = function agentsAgentIdAgentDELETE (req, res, next, agentId, client) {
-  Agent.agentsAgentIdAgentDELETE(agentId, client)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+routers.delete('/agents/:agentId/client/:clientId', async (req, res) => {
+  try {
+    let result = await agent.agentsAgentIdAgentDELETE(req.params.agentId, req.params.clientId);
+    res.status(200);
+    res.send(result);
+  } catch (err) {
+    res.status(400);
+    res.send(err);
+  }
+})
 
-module.exports.agentsAgentIdAgentPOST = function agentsAgentIdAgentPOST (req, res, next, agentId, client) {
-  Agent.agentsAgentIdAgentPOST(agentId, client)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+routers.post('/agents/:agentId/client/:clientId', async (req, res) => {
+  try {
+    let result = await agent.agentsAgentIdAgentPOST(req.params.agentId, req.params.clientId);
+    res.status(200);
+    res.send(result);
+  } catch (err) {
+    res.status(400);
+    res.send(err);
+  }
+})
 
-module.exports.agentsGET = function agentsGET (req, res, next) {
-  Agent.agentsGET()
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
+routers.get('/agents', async (req, res) => {
+  try {
+    let result = agent.agentsGET();
+    res.status(200);
+    res.send(result);
+  } catch (err) {
+    res.status(400);
+    res.send(err);
+  }
+})
+
+module.exports = routers;

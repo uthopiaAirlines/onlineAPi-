@@ -1,0 +1,4 @@
+#E382  -- failed to connect to databse
+#E798  -- Invalid Request Body
+#E444  -- Not Enought Seats Available
+#E999  -- Unknown Server Error
