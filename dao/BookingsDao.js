@@ -1,5 +1,5 @@
 bookingDao = {
-    findAll(conn, id) {
+    findAllByPatronId(conn, id) {
         return conn.execute('SELECT b.bookingId, b.patron,  f.flightId, a.airlineId, a.name AS airlineName, f.arrivalTime, f.arrivalLocation , '
             + 'air.name AS arrivalName, air.address AS arrivalAddress, air.airportCode AS arrivalCode, '
             + ' f.departureTime, f.departureLocation, air2.name AS departureName, '

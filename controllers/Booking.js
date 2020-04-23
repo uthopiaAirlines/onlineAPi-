@@ -6,8 +6,6 @@ const router = require('express').Router(),
 
 router.delete('/bookings/:id', async (req, res) => {
   try {
-    console.log("recieved");
-    console.log(req.params.id);
     await booking.bookingsBookingIdDELETE(req.params.id);
     res.status(200);
     res.send("completed");

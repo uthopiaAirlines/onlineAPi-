@@ -2,7 +2,7 @@ const express = require('express'),
     app = express(),
     bodyParser = require('body-parser');
 
-let serverPort = 8080;
+require('dotenv').config();
 
 const flightsRoutes = require('./controllers/Flight'),
     agentRoutes = require('./controllers/Agent'),
@@ -35,6 +35,6 @@ app.use("/", agentRoutes);
 app.use("/", flightsRoutes);
 app.use("/", bookingsRoutes);
 
-app.listen(serverPort, () => {
-    console.log(`The server is running and listening on port ${serverPort}`);
+module.exports = app.listen(process.env.PORT, () => {
+    console.log(`The server is running and listening on port ${process.env.PORT}`);
 });
