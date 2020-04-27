@@ -31,9 +31,9 @@ app.use((err, req, res, next) => {
     next();
 });
 
-app.use("/", agentRoutes);
-app.use("/", flightsRoutes);
-app.use("/", bookingsRoutes);
+app.use(`/online/${process.env.npm_package_version}`, agentRoutes);
+app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
+app.use(`/online/${process.env.npm_package_version}`, bookingsRoutes);
 
 module.exports = app.listen(process.env.PORT, () => {
     console.log(`The server is running and listening on port ${process.env.PORT}`);

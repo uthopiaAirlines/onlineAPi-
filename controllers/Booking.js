@@ -8,7 +8,7 @@ router.delete('/bookings/:id', async (req, res) => {
   try {
     await booking.bookingsBookingIdDELETE(req.params.id);
     res.status(200);
-    res.send("completed");
+    res.send();
   } catch (err) {
     console.log(err.message)
     res.status(errorHandler.statusCodeHandler(err.code));
