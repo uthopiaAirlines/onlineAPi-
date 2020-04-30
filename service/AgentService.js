@@ -61,7 +61,8 @@ exports.agentsAgentIdAgentPOST = async (agentId, clientId) => {
  **/
 exports.agentsGET = async () => {
   try {
-    return await awsAccess.findAllAgents();
+    let result = await awsAccess.findAllAgents();
+    return formatAgents(result);
   } catch (err) {
     if (!err.hasOwnProperty("code"))
       throw {
@@ -70,6 +71,47 @@ exports.agentsGET = async () => {
       }
     else
       throw err;
+  }
+}
+
+exports.agentsGetByUser = async (clientId) => {
+  let conn = await factory.conn();
+  try {
+    let [result] = await agentsDao.findAgentsByUsers(conn, clientId);
+    return result;
+  } catch (err) {
+    if (!err.hasOwnProperty("code"))
+      throw {
+        message: err.message,
+        code: "#E999"
+      }
+    else
+      throw err;
+  }
+}
+
+let formatAgents = (agents) => {
+  try {
+    let formatedAgents = new Array;
+    agents.Users.forEach(agent => {
+      let formatted = { username: agent.Username };
+      agent.Attributes.forEach(attribute => {
+        if (attribute.Name == "sub")
+          formatted.sub = attribute.Value;
+        if (attribute.Name == "email")
+          formatted.email = attribute.Value;
+        if (attribute.Name == "phone_number")
+          formatted.phone = attribute.Value;
+      });
+      formatedAgents.push(formatted);
+    });
+    return formatedAgents;
+
+  } catch (err) {
+    throw {
+      message: "Unable To Process Agents",
+      code: "#E369"
+    };
   }
 }
 
