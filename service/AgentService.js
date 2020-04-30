@@ -87,6 +87,8 @@ exports.agentsGetByUser = async (clientId) => {
       }
     else
       throw err;
+  } finally {
+    await conn.end();
   }
 }
 
