@@ -4,6 +4,9 @@ agentsDao = {
     },
     attachClient(conn, agentId, clientId) {
         return conn.execute('INSERT INTO agentRegistration (agent, client) VALUES (?,?);', [agentId, clientId]);
+    },
+    findAgentsByUsers(conn, clientId) {
+        return conn.execute('SELECT agent FROM agentRegistration where client = ? ;', [clientId]);
     }
 };
 

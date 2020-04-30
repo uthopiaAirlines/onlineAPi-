@@ -74,6 +74,22 @@ exports.agentsGET = async () => {
   }
 }
 
+exports.agentsGetByUser = async (clientId) => {
+  let conn = await factory.conn();
+  try {
+    let [result] = await agentsDao.findAgentsByUsers(conn, clientId);
+    return result;
+  } catch (err) {
+    if (!err.hasOwnProperty("code"))
+      throw {
+        message: err.message,
+        code: "#E999"
+      }
+    else
+      throw err;
+  }
+}
+
 let formatAgents = (agents) => {
   try {
     let formatedAgents = new Array;
