@@ -1,6 +1,7 @@
 const express = require('express'),
     app = express(),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    jwtAuth = require('./authorization/jwtAuth');
 
 require('dotenv').config();
 
@@ -31,8 +32,13 @@ app.use((err, req, res, next) => {
     next();
 });
 
-app.use(`/online/${process.env.npm_package_version}`, agentRoutes);
 app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
+
+app.use((req, res, next) => {
+    jwtAuth.authenticate(req, res, next);
+});
+
+app.use(`/online/${process.env.npm_package_version}`, agentRoutes);
 app.use(`/online/${process.env.npm_package_version}`, bookingsRoutes);
 
 module.exports = app.listen(process.env.PORT, () => {

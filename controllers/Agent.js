@@ -5,6 +5,9 @@ const routers = require('express').Router(),
   errorHandler = require('../utils/errorCodeHandler');
 
 routers.delete('/agents/:agentId/clients/:clientId', async (req, res) => {
+  if (req.body.verifiedSub != req.params.clientId) {
+    res.status(403).send();
+  }
   try {
     let result = await agent.agentsAgentIdAgentDELETE(req.params.agentId, req.params.clientId);
     res.status(200);
@@ -17,6 +20,9 @@ routers.delete('/agents/:agentId/clients/:clientId', async (req, res) => {
 })
 
 routers.post('/agents/:agentId/clients/:clientId', async (req, res) => {
+  if (req.body.verifiedSub != req.params.clientId) {
+    res.status(403).send();
+  }
   try {
     let result = await agent.agentsAgentIdAgentPOST(req.params.agentId, req.params.clientId);
     res.status(201);
@@ -41,6 +47,9 @@ routers.get('/agents', async (req, res) => {
 })
 
 routers.get('/users/:id/agents', async (req, res) => {
+  if (req.body.verifiedSub != req.params.id) {
+    res.status(403).send();
+  }
   try {
     let result = await agent.agentsGetByUser(req.params.id);
     res.status(200);

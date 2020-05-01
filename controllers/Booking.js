@@ -18,6 +18,9 @@ router.delete('/bookings/:id', async (req, res) => {
 
 router.post('/bookings', async (req, res) => {
   try {
+    if (req.body.verifiedSub != req.body.patron) {
+      res.status(403).send();
+    }
     let result = await booking.bookingsPOST(req.body);
     res.status(201);
     res.send(result);
@@ -29,6 +32,9 @@ router.post('/bookings', async (req, res) => {
 })
 
 router.get('/users/:id/bookings', async (req, res) => {
+  if (req.body.verifiedSub != req.params.id) {
+    res.status(403).send();
+  }
   try {
     let result = await booking.usersUserIdBookingsGET(req.params.id);
     res.status(200);
