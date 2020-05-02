@@ -45,7 +45,7 @@ exports.bookingsBookingIdDELETE = async (bookingId) => {
  * no response value expected for this operation
  **/
 exports.bookingsPOST = async (body) => {
-  if (!body.hasOwnProperty("patron") || !body.hasOwnProperty("flight") || !body.hasOwnProperty("ticketPrice") || !body.hasOwnProperty("numberOfTickets") || !body.hasOwnProperty("bookingAgent"))
+  if (!body.hasOwnProperty("patron") || !body.hasOwnProperty("flight") || !body.hasOwnProperty("ticketPrice") || !body.hasOwnProperty("numberOfTickets") || !body.hasOwnProperty("bookingAgent") || !body.hasOwnProperty("paymentId"))
     throw {
       message: "Invalid Request Body",
       code: "#E798"
