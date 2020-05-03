@@ -3,7 +3,7 @@
 const bookingDao = require('../dao/BookingsDao'),
   flightsDao = require('../dao/FlightsDao'),
   factory = require('../utils/dbConnectionFactory'),
-  stripe = require('stripe')('sk_test_nO7vO3qiJLXNPAbw4sO10zx700DuBv1ev6');
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 /**
  * Delete a booking
