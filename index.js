@@ -1,7 +1,8 @@
 const express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
-    jwtAuth = require('./authorization/jwtAuth');
+    jwtAuth = require('./authorization/jwtAuth'),
+    cors = require('cors');
 
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ app.use(function (req, res, next) {
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     );
+    res.header("Access-Control-Allow-Credentials", true);
     next();
 })
 
@@ -33,6 +35,8 @@ app.use((err, req, res, next) => {
 });
 
 app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
+
+app.use('*', cors());
 
 app.use((req, res, next) => {
     jwtAuth.authenticate(req, res, next);
