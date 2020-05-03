@@ -1,7 +1,7 @@
 const jwt = require('jwt-simple');
 
 exports.authenticate = function (req, res, next) {
-    let token = req.get('Authorization').substring(7);
+    let token = req.header('authorization').substring(7);
     if (token) {
         let decoded = jwt.decode(token, process.env.JWT_SECRET_TOKEN.replace('/\\n/g', '\n'));
         if (decoded.client_id != process.env.CLIENT_ID) {

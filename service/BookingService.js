@@ -2,8 +2,8 @@
 
 const bookingDao = require('../dao/BookingsDao'),
   flightsDao = require('../dao/FlightsDao'),
-  factory = require('../utils/dbConnectionFactory');
-  const stripe = require('stripe')('sk_test_nO7vO3qiJLXNPAbw4sO10zx700DuBv1ev6');
+  factory = require('../utils/dbConnectionFactory'),
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 /**
  * Delete a booking
@@ -21,9 +21,7 @@ exports.bookingsBookingIdDELETE = async (bookingId) => {
         message: "Booking Not Found",
         code: "#E404"
       }
-    await stripe.refunds.create({
-      payment_intent: booking.paymentId
-    });
+    await stripe.refunds.create({ payment_intent: booking[0].paymentId });
     await flightsDao.addSeatsToFlight(conn, booking[0].flightId, booking[0].numberOfTickets);
     await bookingDao.deleteBooking(conn, bookingId);
     await conn.commit();
