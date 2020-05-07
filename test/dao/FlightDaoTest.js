@@ -3,7 +3,7 @@ const assert = require('assert'),
     flightDao = require('../../dao/FlightsDao.js'),
     factory = require('../../utils/dbConnectionFactory');
 
-describe("test the booking dao", function () {
+describe("test the flight dao", function () {
     let conn;
 
     this.beforeAll(function (done) {
