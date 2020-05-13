@@ -1,9 +1,10 @@
+require('dotenv').config();
 const assert = require('assert'),
     expect = require('chai').expect,
     flightDao = require('../../dao/FlightsDao.js'),
     factory = require('../../utils/dbConnectionFactory');
 
-describe("test the flight dao", function () {
+describe("test the booking dao", function () {
     let conn;
 
     this.beforeAll(function (done) {
