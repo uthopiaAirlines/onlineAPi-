@@ -4,6 +4,7 @@
   "description": "API for customer interactions",
   "main": "index.js",
   "scripts": {
+    "test": "nyc mocha ./test/dao/ ./test/service/ --exit",
     "prestart": "npm install",
     "start": "node index.js"
   },

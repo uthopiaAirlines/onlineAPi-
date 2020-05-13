@@ -1,7 +1,9 @@
+require('dotenv').config();
+
 const assert = require('assert'),
-    expect = require('chai').expect,
     bookingService = require('../../service/BookingService'),
-    factory = require('../../utils/dbConnectionFactory');
+    factory = require('../../utils/dbConnectionFactory'),
+    bookingDao = require('../../dao/BookingsDao');
 
 describe("Test Booking Service", function () {
     it("should throw error code #E798", async () => {
@@ -67,28 +69,32 @@ describe("Test Booking Service", function () {
             assert.equal(err.code, "#E798")
         }
     });
-    let insertId;
+
     it("should create a new bookings", async () => {
+        let insertId;
         try {
             let result = await bookingService.bookingsPOST({
-                "patron": 5,
+                "patron": "testUser",
                 "flight": 2,
                 "ticketPrice": 230.20,
                 "numberOfTickets": 3,
-                "bookingAgent": 1
+                "bookingAgent": "testAgent",
+                "paymentId": "testTestTest"
             });
             assert.equal(result.affectedRows, 1);
             insertId = result.insertId;
+            let conn = await factory.conn();
+            await bookingDao.deleteBooking(conn, insertId);
         } catch (err) {
             console.log(err);
             assert.fail();
         }
     });
-    it("should delete created booking", async () => {
-        try {
-            await bookingService.bookingsBookingIdDELETE(insertId);
-        } catch (err) {
-            assert.fail();
-        }
-    });
+    // it("should delete created booking", async () => {
+    //     try {
+    //         await bookingService.bookingsBookingIdDELETE(insertId);
+    //     } catch (err) {
+    //         assert.fail();
+    //     }
+    // });
 });

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const chai = require("chai"),
     chaiHttp = require("chai-http"),
     server = require("../../index"),
