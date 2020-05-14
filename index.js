@@ -13,7 +13,7 @@ const flightsRoutes = require('./controllers/Flight'),
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", '*');
+    res.header("Access-Control-Allow-Origin", 'https://www.utopiaairlines.com');
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
     res.header(
         "Access-Control-Allow-Headers",
@@ -36,7 +36,7 @@ app.use((err, req, res, next) => {
 
 app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
 
-app.use('*', cors());
+app.use('https://www.utopiaairlines.com', cors());
 
 app.use((req, res, next) => {
     jwtAuth.authenticate(req, res, next);
