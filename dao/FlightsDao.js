@@ -4,7 +4,8 @@ flightsDao = {
             + 'air.address as arrivalAddress, air.airportCode as arrivalCode, f.departureTime, f.departureLocation, air2.name as departureName, '
             + 'air2.address as departureAddress, air2.airportCode as departureCode, f.availableSeats, f.price '
             + 'FROM flights AS f JOIN airlines AS a ON a.airlineId = f.airline JOIN airports AS air '
-            + 'ON air.airportId = f.arrivalLocation JOIN airports as air2 on air2.airportId = f.departureLocation;');
+            + 'ON air.airportId = f.arrivalLocation JOIN airports as air2 on air2.airportId = f.departureLocation  WHERE f.availableSeats > 0 AND f.departureTime > ?;',
+            [new Date()]);
     },
     addSeatsToFlight(conn, flightId, seats) {
         return conn.execute('UPDATE flights SET availableSeats = availableSeats + ? WHERE flightId = ?;', [seats, flightId]);
