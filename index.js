@@ -34,9 +34,11 @@ app.use((err, req, res, next) => {
     next();
 });
 
+app.use(cors());
+app.options('*', cors())
+
 app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
 
-app.use('*', cors());
 
 app.use((req, res, next) => {
     jwtAuth.authenticate(req, res, next);
