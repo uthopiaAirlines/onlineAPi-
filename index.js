@@ -39,7 +39,6 @@ app.options('*', cors())
 
 app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
 
-// app.use('https://www.utopiaairlines.com', cors());
 
 app.use((req, res, next) => {
     jwtAuth.authenticate(req, res, next);

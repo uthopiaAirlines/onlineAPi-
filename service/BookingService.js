@@ -21,6 +21,12 @@ exports.bookingsBookingIdDELETE = async (bookingId) => {
         message: "Booking Not Found",
         code: "#E404"
       }
+    if (booking.departureTime < new Date()) {
+      throw {
+        message: "Flight Already Departed",
+        code: "#E723"
+      }
+    }
     await stripe.refunds.create({ payment_intent: booking[0].paymentId });
     await flightsDao.addSeatsToFlight(conn, booking[0].flightId, booking[0].numberOfTickets);
     await bookingDao.deleteBooking(conn, bookingId);
