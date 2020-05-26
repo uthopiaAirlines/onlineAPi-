@@ -8,7 +8,8 @@ require('dotenv').config();
 
 const flightsRoutes = require('./controllers/Flight'),
     agentRoutes = require('./controllers/Agent'),
-    bookingsRoutes = require('./controllers/Booking');
+    bookingsRoutes = require('./controllers/Booking'),
+    airportRoutes = require('./controllers/Airport');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -38,7 +39,7 @@ app.use(cors());
 app.options('*', cors())
 
 app.use(`/online/${process.env.npm_package_version}`, flightsRoutes);
-
+app.use(`/online/${process.env.npm_package_version}`, airportRoutes);
 
 app.use((req, res, next) => {
     jwtAuth.authenticate(req, res, next);
